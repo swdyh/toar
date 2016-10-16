@@ -23,6 +23,7 @@ class ToarTest < Minitest::Test
     destroy_all
     user = Toar.to_ar(User, json)
     assert_equal('A1', user.account.name)
+    assert_equal(user.account.id, user.account_id)
   end
 
   def test_has_many

@@ -20,6 +20,9 @@ module Toar
       when :belongs_to
         d.delete("#{k}_id")
         to_ar(as.klass, v, obj.send("build_#{k}"))
+        obj.class_eval do
+          define_method("#{k}_id") { obj.send(k).id }
+        end
       when :has_one
         to_ar(as.klass, v, obj.send("build_#{k}"))
       when :has_many
