@@ -46,4 +46,19 @@ module Toar
     end
     obj
   end
+
+  def self.convert_includes_option(*opt)
+    r = []
+    opt.flatten.each do |i|
+      case i
+      when Symbol
+        r << i
+      when Hash
+        i.each do |k, v|
+          r << { k => convert_includes_option(v) }
+        end
+      end
+    end
+    { include: r }
+  end
 end

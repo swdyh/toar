@@ -70,6 +70,24 @@ class ToarTest < Minitest::Test
         .map(&:post_tag).map(&:name), %w(Tag1 Tag2))
   end
 
+  def test_includes_opt
+    assert_equal({ include: [:a] }, Toar.convert_includes_option(:a))
+    assert_equal({ include: [:a, :b] }, Toar.convert_includes_option(:a, :b))
+    assert_equal({ include: [:a, :b] }, Toar.convert_includes_option([:a, :b]))
+    assert_equal({ include: [a: { include: [:b] }] }, Toar.convert_includes_option(a: :b))
+    assert_equal({ include: [{a: { include: [{ b: { include: [:c] } } ] } }] },
+      Toar.convert_includes_option(a: { b: :c }))
+    assert_equal({ include: [:a, { b: { include: [:d, :e] } }, { c: { include: [{ d: { include: [{ e: { include: [:f] } }] } }] } }] },
+      Toar.convert_includes_option(:a, { b: [:d, :e] }, c: { d: { e: :f } }))
+  end
+
+  def test_includes_opt_with_ar
+    u = create_account_with_associations.users.first
+    assert_equal(u.as_json, u.as_json(Toar.convert_includes_option()))
+    assert_equal(u.as_json(include: [:account, :posts]), u.as_json(Toar.convert_includes_option(:account, :posts)))
+    assert_equal(u.as_json(include: [:account, { posts: { include: [:post_tags] } } ]), u.as_json(Toar.convert_includes_option(:account, posts: :post_tags)))
+  end
+
   private
 
   def create_account_with_associations
