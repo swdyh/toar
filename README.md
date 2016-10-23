@@ -48,6 +48,25 @@ Or install it yourself as:
 => #<Account id: 1, name: "AC">
 ```
 
+extend ActiveRecord Model
+
+```
+class User
+  extend Toar::Ar
+  toar includes: [:posts, :account]
+end
+
+u = User.new
+u.build_account
+3.times { u.posts.build }
+u.save!
+u.reload
+json = u.toar_to_json
+u_ = User.to_ar(json)
+p u_.posts
+p u_.account
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
