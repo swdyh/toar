@@ -105,8 +105,4 @@ class ToarTest < Minitest::Test
     post3.post_tags = [tag1, tag2]
     ac
   end
-
-  def destroy_all
-    [Account, User, Post, PostTag, PostTagging].map(&:destroy_all)
-  end
 end

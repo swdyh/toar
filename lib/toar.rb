@@ -3,6 +3,7 @@ require 'json'
 
 # Deserialize JSON to ActiveRecord Model with associations
 module Toar
+
   def self.to_ar(klass, val, base_object = nil)
     d = val.class == Hash ? val.dup : JSON.parse(val)
     obj = base_object || klass.new
@@ -60,5 +61,35 @@ module Toar
       end
     end
     { include: r }
+  end
+
+  module Ar
+    def toar(opt = {})
+      @toar_opt ||= {}
+      @toar_opt[(opt[:name] || '').to_sym] = opt
+      include Instance
+    end
+
+    def to_ar(json)
+      Toar.to_ar(self, json)
+    end
+
+    def toar_opt(name = '')
+      @toar_opt[name.to_sym]
+    end
+
+    module Instance
+      def toar_as_json(name = '')
+        inc_opt = self.class.toar_opt(name)[:includes]
+        self.class
+          .includes(inc_opt)
+          .find_by(id: self.id)
+          .as_json(Toar.convert_includes_option(inc_opt))
+      end
+
+      def toar_to_json(name = '')
+        toar_as_json(name).to_json
+      end
+    end
   end
 end

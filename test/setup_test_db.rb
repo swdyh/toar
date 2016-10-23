@@ -64,3 +64,7 @@ class PostTagging < ActiveRecord::Base
   belongs_to :post
   belongs_to :post_tag
 end
+
+def destroy_all
+  [Account, User, Post, PostTag, PostTagging].map(&:destroy_all)
+end
